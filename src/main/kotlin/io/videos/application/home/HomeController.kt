@@ -1,5 +1,6 @@
-package io.videos.application
+package io.videos.application.home
 
+import io.videos.application.pipe
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -9,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView
 import java.util.UUID
 
 @Controller
-class HomeController(private val home: HomeModelService) {
+class HomeController(private val home: HomeService) {
 
     @GetMapping("/")
     fun home(model: Model): String {
@@ -19,14 +20,12 @@ class HomeController(private val home: HomeModelService) {
 
     @PostMapping("/upload-video")
     fun uploadVideo(upload: Upload): ModelAndView =
-        UploadVideo(upload.name)
-            .pipe { home.uploadVideo(it) }
+        home.uploadVideo(upload)
             .pipe { backHome }
 
     @PostMapping("/record-viewing/{videoId}")
     fun recordViewing(@PathVariable("videoId") id: UUID): ModelAndView =
-        ViewVideo(id)
-            .pipe { home.recordView(it) }
+        home.recordView(id)
             .pipe { backHome }
 
     private val backHome: ModelAndView =

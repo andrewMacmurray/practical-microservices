@@ -1,16 +1,13 @@
-package io.videos.application
+package io.videos.application.cqrs
 
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.springframework.stereotype.Component
 
 @Component
-class Commands(private val commandGateway: CommandGateway) {
+class Commands(private val gateway: CommandGateway) {
 
     fun <T : Command> issue(command: T) {
-        commandGateway.send<T>(command).join()
+        gateway.send<T>(command).join()
     }
 }
 
-interface Command
-
-interface Event
