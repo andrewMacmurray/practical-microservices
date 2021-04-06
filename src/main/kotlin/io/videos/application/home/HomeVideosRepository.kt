@@ -36,4 +36,6 @@ class HomeModelRepository {
     )
 }
 
-object HomeModelQuery : Query
+object HomeModelQuery : Query<HomeModel> {
+    override val type = HomeModel::class
+}

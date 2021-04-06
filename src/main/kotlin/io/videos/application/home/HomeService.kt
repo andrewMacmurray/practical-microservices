@@ -2,9 +2,9 @@ package io.videos.application.home
 
 import io.videos.application.cqrs.Commands
 import io.videos.application.cqrs.Queries
+import io.videos.application.videos.RecordView
 import io.videos.application.videos.UploadVideo
 import io.videos.application.videos.VideoId
-import io.videos.application.videos.RecordView
 import org.springframework.stereotype.Service
 
 @Service
@@ -22,7 +22,7 @@ class HomeService(
     }
 
     fun model(): HomeModel =
-        queries.get(HomeModelQuery, HomeModel::class)
+        queries.get(HomeModelQuery)
 }
 
 class HomeModel(
