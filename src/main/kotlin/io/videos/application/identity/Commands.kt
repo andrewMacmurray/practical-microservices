@@ -12,3 +12,9 @@ data class RegisterUser(
     @TargetAggregateIdentifier
     val userId: UserId = UUID.randomUUID()
 }
+
+data class LoginUser(
+    @TargetAggregateIdentifier
+    val userId: UserId,
+    val email: String
+) : Command

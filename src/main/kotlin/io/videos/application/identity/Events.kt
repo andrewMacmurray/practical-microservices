@@ -14,3 +14,14 @@ data class RegistrationRejected(
     val passwordHash: String,
     val reason: String
 ) : Event
+
+data class LoginSucceeded(
+    val userId: UserId,
+    val email: String
+) : Event
+
+data class LoginFailed(
+    val userId: UserId? = null,
+    val email: String,
+    val reason: String
+) : Event

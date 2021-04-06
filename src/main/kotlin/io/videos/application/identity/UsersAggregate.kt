@@ -27,8 +27,18 @@ class UsersAggregate {
         }
     }
 
+    @CommandHandler
+    fun handle(cmd: LoginUser) {
+        AggregateLifecycle.apply(
+            LoginSucceeded(
+                userId = userId!!,
+                email = cmd.email
+            )
+        )
+    }
+
     private fun Queries.emailTaken(email: String): Boolean =
-        this.get(RegisteredUsersQuery).emailTaken(email)
+        this.registeredUsers().emailTaken(email)
 
     private fun register(cmd: RegisterUser) {
         AggregateLifecycle.apply(

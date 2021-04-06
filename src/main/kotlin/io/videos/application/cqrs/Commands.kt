@@ -11,3 +11,4 @@ class Commands(private val gateway: CommandGateway) {
     }
 }
 
+interface Command

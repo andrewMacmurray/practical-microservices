@@ -4,6 +4,7 @@ import io.videos.application.pipe
 import org.axonframework.messaging.responsetypes.ResponseTypes
 import org.axonframework.queryhandling.QueryGateway
 import org.springframework.stereotype.Component
+import kotlin.reflect.KClass
 
 @Component
 class Queries(private val gateway: QueryGateway) {
@@ -14,3 +15,6 @@ class Queries(private val gateway: QueryGateway) {
             .join()
 }
 
+interface Query<T : Any> {
+    val type: KClass<T>
+}

@@ -1,5 +1,6 @@
 package io.videos.application.identity
 
+import io.videos.application.cqrs.Queries
 import io.videos.application.cqrs.Query
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.queryhandling.QueryHandler
@@ -25,7 +26,13 @@ class RegisteredUsers(private val users: MutableMap<UserId, User>) {
 
     fun emailTaken(email: String): Boolean =
         users.filterValues { it.email == email }.isNotEmpty()
+
+    fun findByEmail(email: String): User? =
+        users.values.find { it.email == email }
 }
+
+fun Queries.registeredUsers(): RegisteredUsers =
+    this.get(RegisteredUsersQuery)
 
 object RegisteredUsersQuery : Query<RegisteredUsers> {
     override val type = RegisteredUsers::class
