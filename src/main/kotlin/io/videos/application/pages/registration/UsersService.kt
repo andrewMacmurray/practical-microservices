@@ -1,14 +1,14 @@
-package io.videos.application.registration
+package io.videos.application.pages.registration
 
 import io.videos.application.Result
 import io.videos.application.cqrs.Commands
 import io.videos.application.cqrs.Events
 import io.videos.application.cqrs.Queries
-import io.videos.application.identity.LoginFailed
-import io.videos.application.identity.LoginUser
-import io.videos.application.identity.RegisterUser
-import io.videos.application.identity.User
-import io.videos.application.identity.registeredUsers
+import io.videos.application.domains.identity.LoginFailed
+import io.videos.application.domains.identity.LoginUser
+import io.videos.application.domains.identity.RegisterUser
+import io.videos.application.domains.identity.RegisteredUsersQuery
+import io.videos.application.domains.identity.User
 import io.videos.application.pipe
 import org.springframework.stereotype.Service
 
@@ -49,7 +49,9 @@ class UsersService(
     }
 
     private fun findUser(login: Login) =
-        queries.registeredUsers().findByEmail(login.email)
+        RegisteredUsersQuery
+            .exec(queries)
+            .findByEmail(login.email)
 
     private fun signalFailure(login: Login) {
         events.emit(

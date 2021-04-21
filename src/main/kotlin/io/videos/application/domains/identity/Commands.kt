@@ -1,20 +1,20 @@
-package io.videos.application.identity
+package io.videos.application.domains.identity
 
 import io.videos.application.cqrs.Command
 import org.axonframework.modelling.command.TargetAggregateIdentifier
 import java.util.UUID
 
-data class RegisterUser(
+class RegisterUser(
     val email: String,
     val passwordHash: String
 ) : Command {
 
     @TargetAggregateIdentifier
-    val userId: UserId = UUID.randomUUID()
+    val userId: UUID = UUID.randomUUID()
 }
 
-data class LoginUser(
+class LoginUser(
     @TargetAggregateIdentifier
-    val userId: UserId,
+    val userId: UUID,
     val email: String
 ) : Command

@@ -12,3 +12,5 @@ class Events(private val eventGateway: EventGateway) {
 }
 
 interface Event
+
+annotation class EventName(val name: String)

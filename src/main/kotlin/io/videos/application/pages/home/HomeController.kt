@@ -1,4 +1,4 @@
-package io.videos.application.home
+package io.videos.application.pages.home
 
 import io.videos.application.pipe
 import org.springframework.stereotype.Controller

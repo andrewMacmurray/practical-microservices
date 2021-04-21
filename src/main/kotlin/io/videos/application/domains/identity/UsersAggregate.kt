@@ -1,4 +1,4 @@
-package io.videos.application.identity
+package io.videos.application.domains.identity
 
 import io.videos.application.cqrs.Queries
 import org.axonframework.commandhandling.CommandHandler
@@ -8,13 +8,11 @@ import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
 import java.util.UUID
 
-typealias UserId = UUID
-
 @Aggregate
 class UsersAggregate {
 
     @AggregateIdentifier
-    private var userId: UserId? = null
+    private var userId: UUID? = null
 
     constructor()
 
@@ -38,7 +36,7 @@ class UsersAggregate {
     }
 
     private fun Queries.emailTaken(email: String): Boolean =
-        this.registeredUsers().emailTaken(email)
+        RegisteredUsersQuery.exec(this).emailTaken(email)
 
     private fun register(cmd: RegisterUser) {
         AggregateLifecycle.apply(

@@ -1,20 +1,24 @@
-package io.videos.application.identity
+package io.videos.application.domains.identity
 
+import io.videos.application.Entity
+import io.videos.application.Repository
 import io.videos.application.cqrs.Queries
 import io.videos.application.cqrs.Query
+import io.videos.application.emptyRepository
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.queryhandling.QueryHandler
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class RegisteredUsersRepository {
 
-    private val users: MutableMap<UserId, User> =
-        mutableMapOf()
+    private val users: Repository<User> =
+        emptyRepository()
 
     @EventHandler
     fun on(e: UserRegistered) {
-        users[e.userId] = e.toUser()
+        users.add(e.toUser())
     }
 
     @QueryHandler
@@ -22,17 +26,14 @@ class RegisteredUsersRepository {
         RegisteredUsers(users)
 }
 
-class RegisteredUsers(private val users: MutableMap<UserId, User>) {
+class RegisteredUsers(private val users: Repository<User>) {
 
     fun emailTaken(email: String): Boolean =
-        users.filterValues { it.email == email }.isNotEmpty()
+        users.all().any { it.email == email }
 
     fun findByEmail(email: String): User? =
-        users.values.find { it.email == email }
+        users.all().find { it.email == email }
 }
-
-fun Queries.registeredUsers(): RegisteredUsers =
-    this.get(RegisteredUsersQuery)
 
 object RegisteredUsersQuery : Query<RegisteredUsers> {
     override val type = RegisteredUsers::class
@@ -45,7 +46,7 @@ private fun UserRegistered.toUser() = User(
 )
 
 data class User(
-    val id: UserId,
+    override val id: UUID,
     val email: String,
     val passwordHash: String
-)
+) : Entity

@@ -1,23 +1,26 @@
-package io.videos.application.home
+package io.videos.application.pages.home
 
+import io.videos.application.Entity
+import io.videos.application.Repository
 import io.videos.application.cqrs.Query
-import io.videos.application.videos.VideoId
-import io.videos.application.videos.VideoUploaded
-import io.videos.application.videos.VideoViewed
+import io.videos.application.domains.videos.VideoUploaded
+import io.videos.application.domains.videos.VideoViewed
+import io.videos.application.emptyRepository
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.queryhandling.QueryHandler
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 data class Video(
-    val id: VideoId,
+    override val id: UUID,
     val name: String
-)
+) : Entity
 
 @Service
 class HomeModelRepository {
 
     private var viewCount: Int = 0
-    private val videos: MutableMap<VideoId, Video> = mutableMapOf()
+    private val videos: Repository<Video> = emptyRepository()
 
     @EventHandler
     fun on(e: VideoViewed) {
@@ -26,13 +29,13 @@ class HomeModelRepository {
 
     @EventHandler
     fun on(e: VideoUploaded) {
-        videos[e.videoId] = Video(e.videoId, e.name)
+        videos.add(Video(e.videoId, e.name))
     }
 
     @QueryHandler
     fun handle(q: HomeModelQuery) = HomeModel(
         videosWatched = viewCount,
-        videos = videos.values.toList()
+        videos = videos.all()
     )
 }
 

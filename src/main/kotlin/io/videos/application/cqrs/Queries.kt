@@ -17,4 +17,7 @@ class Queries(private val gateway: QueryGateway) {
 
 interface Query<T : Any> {
     val type: KClass<T>
+
+    fun exec(queries: Queries): T =
+        queries.get(this)
 }

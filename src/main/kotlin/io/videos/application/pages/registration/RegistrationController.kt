@@ -1,4 +1,4 @@
-package io.videos.application.registration
+package io.videos.application.pages.registration
 
 import io.videos.application.map
 import io.videos.application.onError

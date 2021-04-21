@@ -1,11 +1,11 @@
-package io.videos.application.home
+package io.videos.application.pages.home
 
 import io.videos.application.cqrs.Commands
 import io.videos.application.cqrs.Queries
-import io.videos.application.videos.RecordView
-import io.videos.application.videos.UploadVideo
-import io.videos.application.videos.VideoId
+import io.videos.application.domains.videos.RecordView
+import io.videos.application.domains.videos.UploadVideo
 import org.springframework.stereotype.Service
+import java.util.UUID
 
 @Service
 class HomeService(
@@ -17,7 +17,7 @@ class HomeService(
         commands.issue(UploadVideo(upload.name))
     }
 
-    fun recordView(id: VideoId) {
+    fun recordView(id: UUID) {
         commands.issue(RecordView(id))
     }
 

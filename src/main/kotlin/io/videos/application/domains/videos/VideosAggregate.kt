@@ -1,4 +1,4 @@
-package io.videos.application.videos
+package io.videos.application.domains.videos
 
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
@@ -7,13 +7,11 @@ import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
 import java.util.UUID
 
-typealias VideoId = UUID
-
 @Aggregate
 class VideosAggregate {
 
     @AggregateIdentifier
-    private var videoId: VideoId? = null
+    private var videoId: UUID? = null
 
     constructor()
 
