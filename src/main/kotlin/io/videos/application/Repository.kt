@@ -15,6 +15,10 @@ class Repository<T : Entity> {
 
     fun find(id: UUID): T? =
         entities[id]
+
+    fun delete(id: UUID) {
+        entities.remove(id)
+    }
 }
 
 fun <T : Entity> emptyRepository(): Repository<T> =

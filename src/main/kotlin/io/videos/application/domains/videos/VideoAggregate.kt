@@ -8,7 +8,7 @@ import org.axonframework.spring.stereotype.Aggregate
 import java.util.UUID
 
 @Aggregate
-class VideosAggregate {
+class VideoAggregate {
 
     @AggregateIdentifier
     private var videoId: UUID? = null

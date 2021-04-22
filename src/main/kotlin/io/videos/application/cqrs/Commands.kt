@@ -12,3 +12,7 @@ class Commands(private val gateway: CommandGateway) {
 }
 
 interface Command
+
+fun Command.issue(commands: Commands) {
+    commands.issue(this)
+}

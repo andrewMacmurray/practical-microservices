@@ -9,7 +9,7 @@ import org.axonframework.spring.stereotype.Aggregate
 import java.util.UUID
 
 @Aggregate
-class UsersAggregate {
+class UserAggregate {
 
     @AggregateIdentifier
     private var userId: UUID? = null
