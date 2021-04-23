@@ -3,6 +3,7 @@ package io.videos.application.domains.identity
 import io.videos.application.Logging
 import io.videos.application.cqrs.Commands
 import io.videos.application.cqrs.issue
+import io.videos.application.domains.email.EmailSendFailed
 import io.videos.application.domains.email.EmailSent
 import io.videos.application.domains.email.SendEmail
 import io.videos.application.logger
@@ -45,7 +46,17 @@ class RegistrationSaga : Logging {
         confirmEmailSent(e).issue(commands)
     }
 
-    private fun confirmEmailSent(e: EmailSent) = ConfirmEmailSent(
+    @SagaEventHandler(associationProperty = "emailId")
+    fun handle(e: EmailSendFailed, commands: Commands) {
+        confirmEmailFailed(e).issue(commands)
+    }
+
+    private fun confirmEmailSent(e: EmailSent) = ConfirmRegistrationEmailSent(
+        userId = userId!!,
+        emailId = e.emailId
+    )
+
+    private fun confirmEmailFailed(e: EmailSendFailed) = ConfirmRegistrationEmailFailed(
         userId = userId!!,
         emailId = e.emailId
     )
@@ -53,6 +64,12 @@ class RegistrationSaga : Logging {
     @EndSaga
     @SagaEventHandler(associationProperty = "userId")
     fun handle(e: RegistrationEmailSent) {
-        logger.info("Saga Completed")
+        logger.info("Saga Completedi: registration completed")
+    }
+
+    @EndSaga
+    @SagaEventHandler(associationProperty = "userId")
+    fun handle(e: RegistrationEmailSendFailed) {
+        logger.info("Saga Completed: registration failed")
     }
 }

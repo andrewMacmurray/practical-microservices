@@ -36,9 +36,19 @@ class UserAggregate {
     }
 
     @CommandHandler
-    fun handle(cmd: ConfirmEmailSent) {
+    fun handle(cmd: ConfirmRegistrationEmailSent) {
         AggregateLifecycle.apply(
             RegistrationEmailSent(
+                userId = cmd.userId,
+                emailId = cmd.emailId
+            )
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: ConfirmRegistrationEmailFailed) {
+        AggregateLifecycle.apply(
+            RegistrationEmailSendFailed(
                 userId = cmd.userId,
                 emailId = cmd.emailId
             )

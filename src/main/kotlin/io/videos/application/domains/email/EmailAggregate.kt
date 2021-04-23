@@ -7,6 +7,7 @@ import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
+import org.slf4j.Logger
 import java.util.UUID
 
 @Aggregate
@@ -14,39 +15,53 @@ class EmailAggregate : Logging {
 
     @AggregateIdentifier
     private var emailId: UUID? = null
+    private var mailer: Mailer? = null
+    private val logger: Logger = logger()
 
     constructor()
 
     @CommandHandler
     constructor(cmd: SendEmail, mailer: Mailer) {
-        doSend(cmd.toEmail(), mailer)
+        this.mailer = mailer
+        doSend(cmd.toEmail())
     }
 
-    @CommandHandler
-    fun handle(cmd: ReSendEmail, mailer: Mailer) {
-        doSend(cmd.toEmail(), mailer)
-    }
-
-    private fun doSend(email: Email, mailer: Mailer) {
-        mailer.send(
+    private fun doSend(email: Email) {
+        mailer().send(
             email = email,
-            onSuccess = { emailSuccess(email) },
-            onFailure = { emailFailure(it, email) }
+            onSuccess = ::emailSuccess,
+            onFailure = ::emailFailure
         )
     }
 
     private fun emailFailure(reason: String, email: Email) {
-        logFailure(email, reason)
-        AggregateLifecycle.apply(
-            EmailSendFailed(
-                emailId = email.id,
-                reason = reason,
-                to = email.to,
-                subject = email.subject,
-                text = email.text,
-                html = email.html
+        if (email.retryLimitReached()) {
+            logFailure(email, reason)
+            AggregateLifecycle.apply(
+                EmailSendFailed(
+                    emailId = email.id,
+                    reason = "Retry Limit reached: $reason",
+                    to = email.to,
+                    subject = email.subject,
+                    text = email.text,
+                    html = email.html
+                )
             )
-        )
+        } else {
+            logRetry(email)
+            Thread.sleep(5000)
+            doSend(email)
+            AggregateLifecycle.apply(
+                EmailSendRetried(
+                    emailId = email.id,
+                    tries = email.retries,
+                    to = email.to,
+                    subject = email.subject,
+                    text = email.text,
+                    html = email.html
+                )
+            )
+        }
     }
 
     private fun emailSuccess(email: Email) {
@@ -63,11 +78,15 @@ class EmailAggregate : Logging {
     }
 
     private fun logSuccess(email: Email) {
-        logger().info("Email Sent $email")
+        logger.info("Email Sent $email")
     }
 
     private fun logFailure(email: Email, reason: String) {
-        logger().warn("Send failed for ${email.id}: $reason")
+        logger.warn("Send failed for ${email.id}: $reason")
+    }
+
+    private fun logRetry(email: Email) {
+        logger.warn("Retrying send: $email")
     }
 
     @EventSourcingHandler
@@ -79,17 +98,12 @@ class EmailAggregate : Logging {
     fun on(e: EmailSendFailed) {
         emailId = e.emailId
     }
+
+    private fun mailer(): Mailer =
+        mailer!!
 }
 
 private fun SendEmail.toEmail() = Email(
-    id = emailId,
-    to = to,
-    subject = subject,
-    text = text,
-    html = html
-)
-
-private fun ReSendEmail.toEmail() = Email(
     id = emailId,
     to = to,
     subject = subject,

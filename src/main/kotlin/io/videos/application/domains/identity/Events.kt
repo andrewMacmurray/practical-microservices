@@ -17,6 +17,12 @@ class RegistrationEmailSent(
     val emailId: UUID
 ) : Event
 
+@EventName("RegistrationEmailSendFailed")
+class RegistrationEmailSendFailed(
+    val userId: UUID,
+    val emailId: UUID
+) : Event
+
 @EventName("RegistrationRejected")
 class RegistrationRejected(
     val userId: UUID,

@@ -6,21 +6,26 @@ import java.io.File
 import java.util.UUID
 
 interface Mailer {
-    fun send(email: Email, onSuccess: () -> Unit, onFailure: (String) -> Unit)
+    fun send(
+        email: Email,
+        onSuccess: (Email) -> Unit,
+        onFailure: (reason: String, email: Email) -> Unit
+    )
 }
 
 @Component
 class FileSystemMailer : Mailer {
+
     override fun send(
         email: Email,
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
+        onSuccess: (Email) -> Unit,
+        onFailure: (reason: String, email: Email) -> Unit
     ) {
         try {
             File("emails.txt").appendText(email.toContents())
-            onSuccess()
+            onSuccess(email)
         } catch (e: Exception) {
-            onFailure(e.localizedMessage)
+            onFailure(e.localizedMessage, email.incrementRetries())
         }
     }
 
@@ -41,6 +46,9 @@ data class Email(
     val html: String,
     val retries: Int = 0
 ) : Entity {
-    fun retried(): Email =
+    fun incrementRetries(): Email =
         this.copy(retries = retries + 1)
+
+    fun retryLimitReached(): Boolean =
+        retries > 5
 }

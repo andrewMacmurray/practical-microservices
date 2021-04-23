@@ -19,7 +19,13 @@ class LoginUser(
     val email: String
 ) : Command
 
-class ConfirmEmailSent(
+class ConfirmRegistrationEmailSent(
+    @TargetAggregateIdentifier
+    val userId: UUID,
+    val emailId: UUID
+) : Command
+
+class ConfirmRegistrationEmailFailed(
     @TargetAggregateIdentifier
     val userId: UUID,
     val emailId: UUID
