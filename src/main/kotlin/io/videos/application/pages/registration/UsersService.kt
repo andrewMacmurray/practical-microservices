@@ -54,7 +54,7 @@ class UsersService(
             .findByEmail(login.email)
 
     private fun signalFailure(login: Login) {
-        events.emit(
+        events.publish(
             LoginFailed(
                 email = login.email,
                 reason = "user does not exist"

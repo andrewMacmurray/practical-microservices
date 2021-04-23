@@ -7,41 +7,26 @@ import io.videos.application.cqrs.issue
 import io.videos.application.emptyRepository
 import io.videos.application.logger
 import org.axonframework.eventhandling.EventHandler
+import org.slf4j.Logger
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import org.springframework.stereotype.Service
 
-@Component
-class Sender(private val commands: Commands) : Logging {
+@Service
+class ReSender(private val commands: Commands) : Logging {
 
-    private val retries: Repository<Email> =
+    private val logger: Logger = logger()
+    private val toRetry: Repository<Email> =
         emptyRepository()
-
-    fun send(
-        subject: String,
-        body: String
-    ) {
-        SendEmail(
-            emailId = UUID.randomUUID(),
-            to = "a@b.com",
-            subject = subject,
-            text = body,
-            html = body
-        ).issue(commands)
-    }
 
     @Scheduled(fixedRate = 5000)
     fun resendAll() {
-        retries.all().forEach(::resend)
+        toRetry.all().forEach(::resend)
     }
 
     private fun resend(email: Email) {
         if (email.retries > 5) {
             logRetriesExceeded(email)
-            retries.delete(email.id)
+            toRetry.delete(email.id)
         } else {
             logResending(email)
             doResend(email)
@@ -49,11 +34,11 @@ class Sender(private val commands: Commands) : Logging {
     }
 
     private fun logRetriesExceeded(email: Email) {
-        logger().warn("Retries exceeded for $email")
+        logger.warn("Retries exceeded for $email")
     }
 
     private fun logResending(email: Email) {
-        logger().info("Resending $email")
+        logger.info("Resending $email")
     }
 
     private fun doResend(email: Email) {
@@ -68,12 +53,12 @@ class Sender(private val commands: Commands) : Logging {
 
     @EventHandler
     fun on(e: EmailSendFailed) {
-        retries.add(e.toEmail().retried())
+        toRetry.add(e.toEmail().retried())
     }
 
     @EventHandler
     fun on(e: EmailSent) {
-        retries.delete(e.emailId)
+        toRetry.delete(e.emailId)
     }
 
     private fun EmailSendFailed.toEmail() = Email(
@@ -83,16 +68,4 @@ class Sender(private val commands: Commands) : Logging {
         text = text,
         html = html
     )
-}
-
-@RestController
-class EmailController(private val sender: Sender) {
-
-    @GetMapping("/send-email/{subject}/{body}")
-    fun sendEmail(
-        @PathVariable("subject") subject: String,
-        @PathVariable("body") body: String
-    ) {
-        sender.send(subject, body)
-    }
 }

@@ -11,6 +11,12 @@ class UserRegistered(
     val passwordHash: String
 ) : Event
 
+@EventName("RegistrationEmailSent")
+class RegistrationEmailSent(
+    val userId: UUID,
+    val emailId: UUID
+) : Event
+
 @EventName("RegistrationRejected")
 class RegistrationRejected(
     val userId: UUID,

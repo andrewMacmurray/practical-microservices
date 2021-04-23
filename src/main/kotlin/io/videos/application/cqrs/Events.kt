@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 @Component
 class Events(private val eventGateway: EventGateway) {
 
-    fun <T : Event> emit(e: T) {
+    fun <T : Event> publish(e: T) {
         eventGateway.publish(e)
     }
 }

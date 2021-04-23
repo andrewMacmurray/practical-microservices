@@ -19,7 +19,7 @@ class UserAggregate {
     @CommandHandler
     constructor(cmd: RegisterUser, queries: Queries) {
         if (queries.emailTaken(cmd.email)) {
-            reject(cmd)
+            rejectedEvent(cmd)
         } else {
             register(cmd)
         }
@@ -31,6 +31,16 @@ class UserAggregate {
             LoginSucceeded(
                 userId = userId!!,
                 email = cmd.email
+            )
+        )
+    }
+
+    @CommandHandler
+    fun handle(cmd: ConfirmEmailSent) {
+        AggregateLifecycle.apply(
+            RegistrationEmailSent(
+                userId = cmd.userId,
+                emailId = cmd.emailId
             )
         )
     }
@@ -48,7 +58,7 @@ class UserAggregate {
         )
     }
 
-    private fun reject(cmd: RegisterUser) {
+    private fun rejectedEvent(cmd: RegisterUser) {
         AggregateLifecycle.apply(
             RegistrationRejected(
                 userId = cmd.userId,

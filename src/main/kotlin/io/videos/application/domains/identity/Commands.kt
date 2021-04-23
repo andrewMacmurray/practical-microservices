@@ -18,3 +18,9 @@ class LoginUser(
     val userId: UUID,
     val email: String
 ) : Command
+
+class ConfirmEmailSent(
+    @TargetAggregateIdentifier
+    val userId: UUID,
+    val emailId: UUID
+) : Command

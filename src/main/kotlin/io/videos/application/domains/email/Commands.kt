@@ -6,7 +6,7 @@ import java.util.UUID
 
 data class SendEmail(
     @TargetAggregateIdentifier
-    val emailId: UUID,
+    val emailId: UUID = UUID.randomUUID(),
     val to: String,
     val subject: String,
     val text: String,
