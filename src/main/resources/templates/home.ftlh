@@ -13,3 +13,9 @@
     <input type="text" id="name" name="name"/>
     <button type="submit">Upload Video</button>
 </form>
+
+<ul>
+    <#list model.users as user>
+        <li>${user.email} : ${user.id}</li>
+    </#list>
+</ul>

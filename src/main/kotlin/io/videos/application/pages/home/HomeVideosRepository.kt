@@ -2,7 +2,9 @@ package io.videos.application.pages.home
 
 import io.videos.application.Entity
 import io.videos.application.Repository
+import io.videos.application.cqrs.Queries
 import io.videos.application.cqrs.Query
+import io.videos.application.domains.identity.RegisteredUsersQuery
 import io.videos.application.domains.videos.VideoUploaded
 import io.videos.application.domains.videos.VideoViewed
 import io.videos.application.emptyRepository
@@ -17,7 +19,7 @@ data class Video(
 ) : Entity
 
 @Service
-class HomeModelRepository {
+class HomeModelRepository(private val queries: Queries) {
 
     private var viewCount: Int = 0
     private val videos: Repository<Video> = emptyRepository()
@@ -35,7 +37,8 @@ class HomeModelRepository {
     @QueryHandler
     fun handle(q: HomeModelQuery) = HomeModel(
         videosWatched = viewCount,
-        videos = videos.all()
+        videos = videos.all(),
+        users = RegisteredUsersQuery.exec(queries).all()
     )
 }
 

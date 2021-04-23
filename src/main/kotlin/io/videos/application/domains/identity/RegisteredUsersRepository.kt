@@ -2,7 +2,6 @@ package io.videos.application.domains.identity
 
 import io.videos.application.Entity
 import io.videos.application.Repository
-import io.videos.application.cqrs.Queries
 import io.videos.application.cqrs.Query
 import io.videos.application.emptyRepository
 import org.axonframework.eventhandling.EventHandler
@@ -21,6 +20,11 @@ class RegisteredUsersRepository {
         users.add(e.toUser())
     }
 
+    @EventHandler
+    fun on(e: RegistrationEmailSendFailed) {
+        users.delete(e.userId)
+    }
+
     @QueryHandler
     fun handle(q: RegisteredUsersQuery) =
         RegisteredUsers(users)
@@ -33,6 +37,9 @@ class RegisteredUsers(private val users: Repository<User>) {
 
     fun findByEmail(email: String): User? =
         users.all().find { it.email == email }
+
+    fun all(): List<User> =
+        users.all()
 }
 
 object RegisteredUsersQuery : Query<RegisteredUsers> {

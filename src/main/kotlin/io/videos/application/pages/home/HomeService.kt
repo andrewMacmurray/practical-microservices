@@ -2,6 +2,7 @@ package io.videos.application.pages.home
 
 import io.videos.application.cqrs.Commands
 import io.videos.application.cqrs.Queries
+import io.videos.application.domains.identity.User
 import io.videos.application.domains.videos.RecordView
 import io.videos.application.domains.videos.UploadVideo
 import org.springframework.stereotype.Service
@@ -27,6 +28,7 @@ class HomeService(
 
 class HomeModel(
     val videosWatched: Int = 0,
-    val videos: List<Video>
+    val videos: List<Video>,
+    val users: List<User>
 )
 
