@@ -25,3 +25,8 @@ class VideoViewed(
     val videoId: UUID
 ) : Event
 
+@EventName("VideoNamed")
+class VideoNamed(
+    val videoId: UUID,
+    val name: String
+) : Event

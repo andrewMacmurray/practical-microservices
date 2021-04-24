@@ -29,6 +29,16 @@ class VideoAggregate : Logging {
         )
     }
 
+    @CommandHandler
+    fun handle(cmd: NameVideo) {
+        AggregateLifecycle.apply(
+            VideoNamed(
+                videoId = cmd.videoId,
+                name = cmd.name
+            )
+        )
+    }
+
     private fun transcodingFailed(reason: String, video: Video) {
         logger.warn("transcoding failed: $reason: $video")
         AggregateLifecycle.apply(

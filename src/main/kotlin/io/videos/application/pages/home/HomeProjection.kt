@@ -3,7 +3,9 @@ package io.videos.application.pages.home
 import io.videos.application.Entity
 import io.videos.application.Repository
 import io.videos.application.cqrs.Query
+import io.videos.application.domains.identity.RegisteredUser
 import io.videos.application.domains.identity.UsersRepository
+import io.videos.application.domains.videos.VideoNamed
 import io.videos.application.domains.videos.VideoPublished
 import io.videos.application.domains.videos.VideoViewed
 import io.videos.application.emptyRepository
@@ -15,10 +17,15 @@ import java.util.UUID
 data class Video(
     override val id: UUID,
     val uri: String,
+    val name: String? = null,
+    val user: RegisteredUser,
     val views: Int = 0
 ) : Entity {
-    fun incrementViews() =
+    fun incrementViews(): Video =
         this.copy(views = views + 1)
+
+    fun rename(name: String): Video =
+        this.copy(name = name)
 }
 
 @Component
@@ -34,7 +41,18 @@ class HomeProjection(private val users: UsersRepository) {
 
     @EventHandler
     fun on(e: VideoPublished) {
-        videos.add(Video(e.videoId, e.transcodedUri))
+        videos.add(
+            Video(
+                id = e.videoId,
+                uri = e.transcodedUri,
+                user = users.find(e.ownerId)!!
+            )
+        )
+    }
+
+    @EventHandler
+    fun on(e: VideoNamed) {
+        videos.update(e.videoId) { it.rename(e.name) }
     }
 
     private fun viewCount() =
@@ -42,7 +60,7 @@ class HomeProjection(private val users: UsersRepository) {
 
     @QueryHandler
     fun handle(q: HomeModelQuery) = HomeModel(
-        videosWatched = viewCount(),
+        totalViews = viewCount(),
         videos = videos.all(),
         users = users.all()
     )

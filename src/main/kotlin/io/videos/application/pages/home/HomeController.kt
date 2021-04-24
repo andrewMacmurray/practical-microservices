@@ -12,14 +12,17 @@ import org.springframework.web.servlet.ModelAndView
 import java.util.UUID
 
 @Controller
-class HomeController(private val home: HomeService) {
+class HomeController(
+    private val homeModel: HomeModelLoader,
+    private val videos: VideosService
+) {
 
     @GetMapping("/")
     fun home(
         model: Model,
         @RequestAttribute account: Account
     ): String {
-        model.addAttribute("model", home.model())
+        model.addAttribute("model", homeModel.load())
         model.addAttribute("account", account)
         return "home"
     }
@@ -30,12 +33,20 @@ class HomeController(private val home: HomeService) {
         model: Model,
         @RequestAttribute account: Account
     ): ModelAndView =
-        home.uploadVideo(upload, account.user!!)
+        videos
+            .upload(upload, account.user!!)
             .pipe { backHome }
 
     @PostMapping("/record-viewing/{videoId}")
     fun recordViewing(@PathVariable("videoId") id: UUID): ModelAndView =
-        home.recordView(id)
+        videos
+            .recordView(id)
+            .pipe { backHome }
+
+    @PostMapping("/name-video/{videoId}")
+    fun nameVideo(@PathVariable("videoId") videoId: UUID, name: Name): ModelAndView =
+        videos
+            .name(videoId, name)
             .pipe { backHome }
 
     private val backHome: ModelAndView =
@@ -44,5 +55,9 @@ class HomeController(private val home: HomeService) {
 
 class Upload(
     val uri: String
+)
+
+class Name(
+    val name: String
 )
 

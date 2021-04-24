@@ -15,3 +15,9 @@ class PublishVideo(
     val ownerId: UUID,
     val sourceUri: String
 ) : Command
+
+class NameVideo(
+    @TargetAggregateIdentifier
+    val videoId: UUID,
+    val name: String
+) : Command
