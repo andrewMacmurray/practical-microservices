@@ -1,16 +1,17 @@
+<h2>Logged in as: ${(account.email)!'anonymous'}</h2>
 <h1>Videos Watched: ${model.videosWatched}</h1>
 <ul>
     <#list model.videos as video>
         <li>
             <form action="/record-viewing/${video.id}" method="post">
-                <button type="submit">Record View for ${video.name}</button>
+                <button type="submit">Record View for ${video.uri}</button>
             </form>
         </li>
     </#list>
 </ul>
 <form action="/upload-video" method="post">
-    <label for="name">Video Name</label>
-    <input type="text" id="name" name="name"/>
+    <label for="uri">Video Uri</label>
+    <input type="text" id="uri" name="uri"/>
     <button type="submit">Upload Video</button>
 </form>
 

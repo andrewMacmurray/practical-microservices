@@ -16,6 +16,9 @@ class Repository<T : Entity> {
     fun find(id: UUID): T? =
         entities[id]
 
+    fun find(where: (T) -> Boolean): T? =
+        all().find(where)
+
     fun delete(id: UUID) {
         entities.remove(id)
     }

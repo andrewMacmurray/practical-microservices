@@ -1,6 +1,5 @@
 package io.videos.application.domains.identity
 
-import io.videos.application.cqrs.Queries
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
@@ -17,8 +16,8 @@ class UserAggregate {
     constructor()
 
     @CommandHandler
-    constructor(cmd: RegisterUser, queries: Queries) {
-        if (queries.emailTaken(cmd.email)) {
+    constructor(cmd: RegisterUser, users: UsersRepository) {
+        if (users.emailTaken(cmd.email)) {
             rejectedEvent(cmd)
         } else {
             register(cmd)
@@ -54,9 +53,6 @@ class UserAggregate {
             )
         )
     }
-
-    private fun Queries.emailTaken(email: String): Boolean =
-        RegisteredUsersQuery.exec(this).emailTaken(email)
 
     private fun register(cmd: RegisterUser) {
         AggregateLifecycle.apply(

@@ -2,24 +2,23 @@ package io.videos.application.pages.home
 
 import io.videos.application.Entity
 import io.videos.application.Repository
-import io.videos.application.cqrs.Queries
 import io.videos.application.cqrs.Query
-import io.videos.application.domains.identity.RegisteredUsersQuery
-import io.videos.application.domains.videos.VideoUploaded
+import io.videos.application.domains.identity.UsersRepository
+import io.videos.application.domains.videos.VideoPublished
 import io.videos.application.domains.videos.VideoViewed
 import io.videos.application.emptyRepository
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.queryhandling.QueryHandler
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import java.util.UUID
 
-data class Video(
+class Video(
     override val id: UUID,
-    val name: String
+    val uri: String
 ) : Entity
 
-@Service
-class HomeModelRepository(private val queries: Queries) {
+@Component
+class HomeProjection(private val users: UsersRepository) {
 
     private var viewCount: Int = 0
     private val videos: Repository<Video> = emptyRepository()
@@ -30,15 +29,15 @@ class HomeModelRepository(private val queries: Queries) {
     }
 
     @EventHandler
-    fun on(e: VideoUploaded) {
-        videos.add(Video(e.videoId, e.name))
+    fun on(e: VideoPublished) {
+        videos.add(Video(e.videoId, e.transcodedUri))
     }
 
     @QueryHandler
     fun handle(q: HomeModelQuery) = HomeModel(
         videosWatched = viewCount,
         videos = videos.all(),
-        users = RegisteredUsersQuery.exec(queries).all()
+        users = users.all()
     )
 }
 

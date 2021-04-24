@@ -64,7 +64,7 @@ class RegistrationSaga : Logging {
     @EndSaga
     @SagaEventHandler(associationProperty = "userId")
     fun handle(e: RegistrationEmailSent) {
-        logger.info("Saga Completedi: registration completed")
+        logger.info("Saga Completed: registration completed")
     }
 
     @EndSaga
