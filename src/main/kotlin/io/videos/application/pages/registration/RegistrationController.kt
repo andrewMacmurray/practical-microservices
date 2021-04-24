@@ -2,7 +2,6 @@ package io.videos.application.pages.registration
 
 import io.videos.application.map
 import io.videos.application.onError
-import io.videos.application.pages.Account
 import io.videos.application.pipe
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,33 +15,31 @@ import javax.servlet.http.HttpServletResponse
 class RegistrationController(private val users: UsersService) {
 
     @GetMapping("/register")
-    fun register(): String {
-        return "register"
-    }
+    fun register(): String = "register"
 
     @GetMapping("/login")
-    fun login(account: Account): String {
-        println(account)
-        return "login"
-    }
+    fun login(): String = "login"
 
     @PostMapping("/register")
     fun register(registration: Registration, response: HttpServletResponse): ModelAndView =
         users
             .register(registration)
             .pipe { response.addUserId(it) }
-            .pipe { ModelAndView("redirect:/") }
+            .pipe { backHome }
 
     @PostMapping("/login")
     fun login(login: Login, response: HttpServletResponse): ModelAndView =
         users
             .login(login)
             .map { response.addUserId(it.id) }
-            .map { ModelAndView("redirect:/", mapOf("user" to it)) }
-            .onError { ModelAndView("login", mapOf("error" to it)) }
+            .map { backHome }
+            .onError { ModelAndView("login") }
+
+    private val backHome: ModelAndView =
+        ModelAndView("redirect:/")
 
     private fun HttpServletResponse.addUserId(id: UUID) {
-        this.addCookie(Cookie("userId", id.toString()))
+        this.addCookie(Cookie("userId", "$id"))
     }
 }
 

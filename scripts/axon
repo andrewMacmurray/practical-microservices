@@ -1,3 +1,3 @@
 # !bin/bash
 
-docker container run --rm --name axon -p 8124:8124 -p 8024:8024 axoniq/axonserver
+docker container run --rm --name axon -p 8124:8124 -p 8024:8024 -e AXONIQ_AXONSERVER_DEVMODE_ENABLED=true axoniq/axonserver
