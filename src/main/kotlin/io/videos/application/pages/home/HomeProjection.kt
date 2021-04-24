@@ -12,20 +12,24 @@ import org.axonframework.queryhandling.QueryHandler
 import org.springframework.stereotype.Component
 import java.util.UUID
 
-class Video(
+data class Video(
     override val id: UUID,
-    val uri: String
-) : Entity
+    val uri: String,
+    val views: Int = 0
+) : Entity {
+    fun incrementViews() =
+        this.copy(views = views + 1)
+}
 
 @Component
 class HomeProjection(private val users: UsersRepository) {
 
-    private var viewCount: Int = 0
-    private val videos: Repository<Video> = emptyRepository()
+    private val videos: Repository<Video> =
+        emptyRepository()
 
     @EventHandler
     fun on(e: VideoViewed) {
-        viewCount++
+        videos.update(e.videoId) { it.incrementViews() }
     }
 
     @EventHandler
@@ -33,9 +37,12 @@ class HomeProjection(private val users: UsersRepository) {
         videos.add(Video(e.videoId, e.transcodedUri))
     }
 
+    private fun viewCount() =
+        videos.all().sumOf { it.views }
+
     @QueryHandler
     fun handle(q: HomeModelQuery) = HomeModel(
-        videosWatched = viewCount,
+        videosWatched = viewCount(),
         videos = videos.all(),
         users = users.all()
     )

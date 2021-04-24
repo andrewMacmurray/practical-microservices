@@ -4,7 +4,7 @@
     <#list model.videos as video>
         <li>
             <form action="/record-viewing/${video.id}" method="post">
-                <button type="submit">Record View for ${video.uri}</button>
+                <button type="submit">Record View for ${video.uri}</button> ${video.views}
             </form>
         </li>
     </#list>

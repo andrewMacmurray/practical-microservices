@@ -10,6 +10,10 @@ class Repository<T : Entity> {
         entities[entity.id] = entity
     }
 
+    fun update(id: UUID, fn: (T) -> T) {
+        entities.computeIfPresent(id) { _, v -> fn(v) }
+    }
+
     fun all(): List<T> =
         entities.values.toList()
 

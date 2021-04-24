@@ -9,7 +9,6 @@ import org.axonframework.modelling.command.AggregateLifecycle
 import org.axonframework.spring.stereotype.Aggregate
 import org.slf4j.Logger
 import java.util.UUID
-import kotlin.math.log
 
 @Aggregate
 class VideoAggregate : Logging {
