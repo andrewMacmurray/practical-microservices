@@ -13,7 +13,7 @@ class RegisterUser(
     val userId: UUID = UUID.randomUUID()
 }
 
-class LoginUser(
+class SignalLoginSuccess(
     @TargetAggregateIdentifier
     val userId: UUID,
     val email: String

@@ -25,23 +25,13 @@ class UserAggregate {
     }
 
     @CommandHandler
-    fun handle(cmd: LoginUser, users: UsersRepository) {
-        if (users.exists(cmd.email)) {
-            AggregateLifecycle.apply(
-                LoginSucceeded(
-                    userId = userId!!,
-                    email = cmd.email
-                )
+    fun handle(cmd: SignalLoginSuccess) {
+        AggregateLifecycle.apply(
+            LoginSucceeded(
+                userId = userId!!,
+                email = cmd.email
             )
-        } else {
-            AggregateLifecycle.apply(
-                LoginFailed(
-                    userId = userId!!,
-                    email = cmd.email,
-                    reason = loginErrorMessage
-                )
-            )
-        }
+        )
     }
 
     @CommandHandler

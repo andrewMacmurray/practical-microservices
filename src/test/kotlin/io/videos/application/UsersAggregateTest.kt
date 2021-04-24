@@ -1,8 +1,5 @@
 package io.videos.application
 
-import io.videos.application.domains.identity.LoginFailed
-import io.videos.application.domains.identity.LoginSucceeded
-import io.videos.application.domains.identity.LoginUser
 import io.videos.application.domains.identity.RegisterUser
 import io.videos.application.domains.identity.RegistrationRejected
 import io.videos.application.domains.identity.UserAggregate
@@ -45,49 +42,6 @@ class UsersAggregateTest {
                     email = register.email,
                     passwordHash = register.passwordHash,
                     reason = "email taken"
-                )
-            )
-    }
-
-    @Test
-    fun `logs in an existing user`() {
-        val register = registerUser()
-
-        val login = LoginUser(
-            userId = register.userId,
-            email = register.email
-        )
-
-        fixture(registeredEmails = listOf(register.email))
-            .givenCommands(register)
-            .`when`(login)
-            .expectSuccessfulHandlerExecution()
-            .expectEvents(
-                LoginSucceeded(
-                    userId = login.userId,
-                    email = login.email
-                )
-            )
-    }
-
-    @Test
-    fun `login fails if user does not exist`() {
-        val register = registerUser()
-
-        val login = LoginUser(
-            userId = register.userId,
-            email = "someone@else.com"
-        )
-
-        fixture()
-            .givenCommands(register)
-            .`when`(login)
-            .expectSuccessfulHandlerExecution()
-            .expectEvents(
-                LoginFailed(
-                    userId = login.userId,
-                    email = login.email,
-                    reason = UserAggregate.loginErrorMessage
                 )
             )
     }

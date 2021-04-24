@@ -3,20 +3,19 @@ package io.videos.application.pages.registration
 import io.videos.application.Result
 import io.videos.application.cqrs.Commands
 import io.videos.application.cqrs.Events
+import io.videos.application.domains.identity.InMemoryUsersRepository
 import io.videos.application.domains.identity.LoginFailed
-import io.videos.application.domains.identity.LoginUser
 import io.videos.application.domains.identity.RegisterUser
 import io.videos.application.domains.identity.RegisteredUser
-import io.videos.application.domains.identity.InMemoryUsersRepository
-import io.videos.application.pipe
+import io.videos.application.domains.identity.SignalLoginSuccess
 import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
 class UsersService(
     private val commands: Commands,
+    private val events: Events,
     private val users: InMemoryUsersRepository,
-    private val events: Events
 ) {
 
     fun register(registration: Registration): UUID {
@@ -45,7 +44,7 @@ class UsersService(
     }
 
     private fun doLogin(user: RegisteredUser) {
-        user.toCmd().pipe(commands::issue)
+        commands.issue(user.toCmd())
     }
 
     private fun findUser(login: Login) =
@@ -61,7 +60,7 @@ class UsersService(
     }
 }
 
-private fun RegisteredUser.toCmd() = LoginUser(
+private fun RegisteredUser.toCmd() = SignalLoginSuccess(
     userId = this.id,
     email = this.email
 )
