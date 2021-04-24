@@ -4,7 +4,7 @@ import io.videos.application.Entity
 import io.videos.application.Repository
 import io.videos.application.cqrs.Query
 import io.videos.application.domains.identity.RegisteredUser
-import io.videos.application.domains.identity.UsersRepository
+import io.videos.application.domains.identity.InMemoryUsersRepository
 import io.videos.application.domains.videos.VideoNamed
 import io.videos.application.domains.videos.VideoPublished
 import io.videos.application.domains.videos.VideoViewed
@@ -29,7 +29,7 @@ data class Video(
 }
 
 @Component
-class HomeProjection(private val users: UsersRepository) {
+class HomeProjection(private val users: InMemoryUsersRepository) {
 
     private val videos: Repository<Video> =
         emptyRepository()

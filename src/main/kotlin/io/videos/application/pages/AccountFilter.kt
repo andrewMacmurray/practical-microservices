@@ -1,7 +1,7 @@
 package io.videos.application.pages
 
 import io.videos.application.domains.identity.RegisteredUser
-import io.videos.application.domains.identity.UsersRepository
+import io.videos.application.domains.identity.InMemoryUsersRepository
 import io.videos.application.pipe
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class AccountFilter(private val users: UsersRepository) : Filter {
+class AccountFilter(private val users: InMemoryUsersRepository) : Filter {
 
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         request as HttpServletRequest

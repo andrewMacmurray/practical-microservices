@@ -17,7 +17,7 @@ class UserAggregate {
 
     @CommandHandler
     constructor(cmd: RegisterUser, users: UsersRepository) {
-        if (users.emailTaken(cmd.email)) {
+        if (users.exists(cmd.email)) {
             rejectedEvent(cmd)
         } else {
             register(cmd)
@@ -25,13 +25,23 @@ class UserAggregate {
     }
 
     @CommandHandler
-    fun handle(cmd: LoginUser) {
-        AggregateLifecycle.apply(
-            LoginSucceeded(
-                userId = userId!!,
-                email = cmd.email
+    fun handle(cmd: LoginUser, users: UsersRepository) {
+        if (users.exists(cmd.email)) {
+            AggregateLifecycle.apply(
+                LoginSucceeded(
+                    userId = userId!!,
+                    email = cmd.email
+                )
             )
-        )
+        } else {
+            AggregateLifecycle.apply(
+                LoginFailed(
+                    userId = userId!!,
+                    email = cmd.email,
+                    reason = loginErrorMessage
+                )
+            )
+        }
     }
 
     @CommandHandler
@@ -83,5 +93,9 @@ class UserAggregate {
     @EventSourcingHandler
     fun on(e: RegistrationRejected) {
         this.userId = e.userId
+    }
+
+    companion object {
+        const val loginErrorMessage = "Invalid username / password combination"
     }
 }

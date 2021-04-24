@@ -31,15 +31,19 @@ class RegisteredUsersProjection {
         RegisteredUsers(users)
 }
 
+interface UsersRepository {
+    fun exists(email: String): Boolean
+}
+
 @Component
-class UsersRepository(private val queries: Queries) {
+class InMemoryUsersRepository(private val queries: Queries) : UsersRepository {
 
     private val users: Repository<RegisteredUser>
         get() = RegisteredUsersQuery
             .exec(queries)
             .repository
 
-    fun emailTaken(email: String): Boolean =
+    override fun exists(email: String): Boolean =
         users.all().any { it.email == email }
 
     fun findByEmail(email: String): RegisteredUser? =

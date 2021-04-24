@@ -7,7 +7,7 @@ import io.videos.application.domains.identity.LoginFailed
 import io.videos.application.domains.identity.LoginUser
 import io.videos.application.domains.identity.RegisterUser
 import io.videos.application.domains.identity.RegisteredUser
-import io.videos.application.domains.identity.UsersRepository
+import io.videos.application.domains.identity.InMemoryUsersRepository
 import io.videos.application.pipe
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -15,7 +15,7 @@ import java.util.UUID
 @Service
 class UsersService(
     private val commands: Commands,
-    private val users: UsersRepository,
+    private val users: InMemoryUsersRepository,
     private val events: Events
 ) {
 
