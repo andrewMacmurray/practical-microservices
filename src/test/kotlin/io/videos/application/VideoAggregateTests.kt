@@ -82,10 +82,10 @@ private class TranscoderStub(val forceFailure: Boolean) : Transcoder {
     override fun transcode(
         video: Video,
         onSuccess: (Video.Transcoded) -> Unit,
-        onFailure: (reason: String, video: Video) -> Unit
+        onError: (reason: String, video: Video) -> Unit
     ) {
         if (forceFailure) {
-            onFailure("transcoding failed", video)
+            onError("transcoding failed", video)
         } else {
             onSuccess(
                 Video.Transcoded(

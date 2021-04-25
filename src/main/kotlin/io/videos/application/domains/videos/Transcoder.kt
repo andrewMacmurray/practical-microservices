@@ -7,7 +7,7 @@ interface Transcoder {
     fun transcode(
         video: Video,
         onSuccess: (Video.Transcoded) -> Unit,
-        onFailure: (reason: String, video: Video) -> Unit
+        onError: (reason: String, video: Video) -> Unit
     )
 }
 
@@ -16,7 +16,7 @@ class InMemoryTranscoder : Transcoder {
     override fun transcode(
         video: Video,
         onSuccess: (Video.Transcoded) -> Unit,
-        onFailure: (reason: String, video: Video) -> Unit
+        onError: (reason: String, video: Video) -> Unit
     ) {
         onSuccess(
             Video.Transcoded(

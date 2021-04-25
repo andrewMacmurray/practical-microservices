@@ -9,12 +9,12 @@ interface Mailer {
     fun send(
         email: Email,
         onSuccess: (Email) -> Unit,
-        onFailure: (Failure) -> Unit
+        onError: (Error) -> Unit
     )
 
-    fun pause(): Unit
+    fun pause()
 
-    class Failure(
+    class Error(
         val reason: String,
         val email: Email
     )
@@ -26,14 +26,14 @@ class FileSystemMailer : Mailer {
     override fun send(
         email: Email,
         onSuccess: (Email) -> Unit,
-        onFailure: (Mailer.Failure) -> Unit
+        onError: (Mailer.Error) -> Unit
     ) {
         try {
             File("emails.txt").appendText(email.toContents())
             onSuccess(email)
         } catch (e: Exception) {
-            onFailure(
-                Mailer.Failure(
+            onError(
+                Mailer.Error(
                     reason = e.localizedMessage,
                     email = email.incrementRetries()
                 )

@@ -25,7 +25,7 @@ class VideoAggregate : Logging {
         transcoder.transcode(
             video = cmd.toVideo(),
             onSuccess = ::videoTranscoded,
-            onFailure = ::transcodingFailed
+            onError = ::transcodingFailed
         )
     }
 

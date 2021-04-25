@@ -28,18 +28,18 @@ class EmailAggregate : Logging {
         mailer.send(
             email = email,
             onSuccess = ::emailSuccess,
-            onFailure = { emailFailure(mailer, it) }
+            onError = { emailFailure(mailer, it) }
         )
     }
 
-    private fun emailFailure(mailer: Mailer, failure: Mailer.Failure) {
-        val email = failure.email
+    private fun emailFailure(mailer: Mailer, error: Mailer.Error) {
+        val email = error.email
         if (email.retryLimitReached()) {
-            logFailure(email, failure.reason)
+            logFailure(email, error.reason)
             AggregateLifecycle.apply(
                 EmailSendFailed(
                     emailId = email.id,
-                    reason = "Retry Limit reached: ${failure.reason}",
+                    reason = "Retry Limit reached: ${error.reason}",
                     to = email.to,
                     subject = email.subject,
                     text = email.text,

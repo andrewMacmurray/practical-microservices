@@ -97,12 +97,12 @@ private class MailerStub(var failNTimes: Int) : Mailer {
     override fun send(
         email: Email,
         onSuccess: (Email) -> Unit,
-        onFailure: (Mailer.Failure) -> Unit
+        onError: (Mailer.Error) -> Unit
     ) {
         if (failNTimes > 0) {
             failNTimes--
-            onFailure(
-                Mailer.Failure(
+            onError(
+                Mailer.Error(
                     reason = "fake fail",
                     email = email.incrementRetries()
                 )
