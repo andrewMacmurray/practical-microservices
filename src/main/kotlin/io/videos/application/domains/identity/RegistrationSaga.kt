@@ -28,18 +28,9 @@ class RegistrationSaga : Logging {
         logger.info("Saga Started $e")
 
         val sendEmail = sendWelcomeEmail(e)
-
-        SagaLifecycle.associateWith("emailId", "${sendEmail.emailId}")
-
+        associate("emailId", sendEmail.emailId)
         sendEmail.issue(commands)
     }
-
-    private fun sendWelcomeEmail(e: UserRegistered) = SendEmail(
-        to = e.email,
-        subject = "Welcome",
-        text = "Welcome",
-        html = "<h1>Welcome</h1>"
-    )
 
     @SagaEventHandler(associationProperty = "emailId")
     fun handle(e: EmailSent, commands: Commands) {
@@ -51,16 +42,6 @@ class RegistrationSaga : Logging {
         confirmEmailFailed(e).issue(commands)
     }
 
-    private fun confirmEmailSent(e: EmailSent) = ConfirmRegistrationEmailSent(
-        userId = userId!!,
-        emailId = e.emailId
-    )
-
-    private fun confirmEmailFailed(e: EmailSendFailed) = ConfirmRegistrationEmailFailed(
-        userId = userId!!,
-        emailId = e.emailId
-    )
-
     @EndSaga
     @SagaEventHandler(associationProperty = "userId")
     fun handle(e: RegistrationEmailSent) {
@@ -71,5 +52,26 @@ class RegistrationSaga : Logging {
     @SagaEventHandler(associationProperty = "userId")
     fun handle(e: RegistrationEmailSendFailed) {
         logger.info("Saga Completed: registration failed")
+    }
+
+    private fun sendWelcomeEmail(e: UserRegistered) = SendEmail(
+        to = e.email,
+        subject = "Welcome",
+        text = "Welcome",
+        html = "<h1>Welcome</h1>"
+    )
+
+    private fun confirmEmailSent(e: EmailSent) = ConfirmRegistrationEmailSent(
+        userId = userId!!,
+        emailId = e.emailId
+    )
+
+    private fun confirmEmailFailed(e: EmailSendFailed) = ConfirmRegistrationEmailFailed(
+        userId = userId!!,
+        emailId = e.emailId
+    )
+
+    private fun associate(key: String, id: UUID) {
+        SagaLifecycle.associateWith(key, id.toString())
     }
 }
