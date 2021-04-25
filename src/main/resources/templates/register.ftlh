@@ -1,3 +1,4 @@
+<h2>Register</h2>
 <form action="/register" method="post">
     <label for="email">Email</label>
     <input type="email" name="email" id="email">

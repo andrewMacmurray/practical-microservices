@@ -20,6 +20,12 @@ class RegistrationController(private val users: UsersService) {
     @GetMapping("/login")
     fun login(): String = "login"
 
+    @GetMapping("/logout")
+    fun logout(response: HttpServletResponse): ModelAndView {
+        clearUserCookie(response)
+        return backHome
+    }
+
     @PostMapping("/register")
     fun register(registration: Registration, response: HttpServletResponse): ModelAndView =
         users
@@ -40,6 +46,12 @@ class RegistrationController(private val users: UsersService) {
 
     private fun HttpServletResponse.addUserId(id: UUID) {
         this.addCookie(Cookie("userId", "$id"))
+    }
+
+    private fun clearUserCookie(response: HttpServletResponse) {
+        val cookie = Cookie("userId", null)
+        cookie.maxAge = 0
+        response.addCookie(cookie)
     }
 }
 

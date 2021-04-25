@@ -1,7 +1,7 @@
 package io.videos.application.pages
 
-import io.videos.application.domains.identity.RegisteredUser
 import io.videos.application.domains.identity.InMemoryUsersRepository
+import io.videos.application.domains.identity.RegisteredUser
 import io.videos.application.pipe
 import org.springframework.stereotype.Component
 import java.util.UUID
@@ -35,4 +35,5 @@ class AccountFilter(private val users: InMemoryUsersRepository) : Filter {
 
 data class Account(val user: RegisteredUser?) {
     val email: String? = user?.email
+    val loggedIn: Boolean = user != null
 }
