@@ -9,7 +9,7 @@ import org.axonframework.test.aggregate.AggregateTestFixture
 import org.axonframework.test.aggregate.FixtureConfiguration
 import org.junit.jupiter.api.Test
 
-class UsersAggregateTest {
+class UserAggregateTests {
 
     @Test
     fun `registers a user`() {
