@@ -10,14 +10,12 @@ import javax.servlet.FilterChain
 import javax.servlet.ServletRequest
 import javax.servlet.ServletResponse
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @Component
 class AccountFilter(private val users: InMemoryUsersRepository) : Filter {
 
     override fun doFilter(request: ServletRequest, response: ServletResponse, chain: FilterChain) {
         request as HttpServletRequest
-        response as HttpServletResponse
         val account = findAccount(request)
         request.setAttribute("account", account)
         chain.doFilter(request, response)
