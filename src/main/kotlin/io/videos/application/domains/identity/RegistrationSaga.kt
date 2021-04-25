@@ -13,6 +13,7 @@ import org.axonframework.modelling.saga.SagaLifecycle
 import org.axonframework.modelling.saga.StartSaga
 import org.axonframework.spring.stereotype.Saga
 import org.slf4j.Logger
+import org.springframework.stereotype.Component
 import java.util.UUID
 
 @Saga
@@ -23,11 +24,11 @@ class RegistrationSaga : Logging {
 
     @StartSaga
     @SagaEventHandler(associationProperty = "userId")
-    fun handle(e: UserRegistered, commands: Commands) {
+    fun handle(e: UserRegistered, commands: Commands, ids: IdGenerator) {
         this.userId = e.userId
         logger.info("Saga Started $e")
 
-        val sendEmail = sendWelcomeEmail(e)
+        val sendEmail = sendWelcomeEmail(ids.generate(), e)
         associate("emailId", sendEmail.emailId)
         sendEmail.issue(commands)
     }
@@ -54,7 +55,8 @@ class RegistrationSaga : Logging {
         logger.info("Saga Completed: registration failed")
     }
 
-    private fun sendWelcomeEmail(e: UserRegistered) = SendEmail(
+    private fun sendWelcomeEmail(emailId: UUID, e: UserRegistered) = SendEmail(
+        emailId = emailId,
         to = e.email,
         subject = "Welcome",
         text = "Welcome",
@@ -74,4 +76,14 @@ class RegistrationSaga : Logging {
     private fun associate(key: String, id: UUID) {
         SagaLifecycle.associateWith(key, id.toString())
     }
+}
+
+@Component
+class Uuids : IdGenerator {
+    override fun generate(): UUID =
+        UUID.randomUUID()
+}
+
+interface IdGenerator {
+    fun generate(): UUID
 }
