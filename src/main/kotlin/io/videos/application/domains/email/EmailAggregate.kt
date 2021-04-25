@@ -15,32 +15,31 @@ class EmailAggregate : Logging {
 
     @AggregateIdentifier
     private var emailId: UUID? = null
-    private var mailer: Mailer? = null
     private val logger: Logger = logger()
 
     constructor()
 
     @CommandHandler
     constructor(cmd: SendEmail, mailer: Mailer) {
-        this.mailer = mailer
-        doSend(cmd.toEmail())
+        doSend(cmd.toEmail(), mailer)
     }
 
-    private fun doSend(email: Email) {
-        mailer().send(
+    private fun doSend(email: Email, mailer: Mailer) {
+        mailer.send(
             email = email,
             onSuccess = ::emailSuccess,
-            onFailure = ::emailFailure
+            onFailure = { emailFailure(mailer, it) }
         )
     }
 
-    private fun emailFailure(reason: String, email: Email) {
+    private fun emailFailure(mailer: Mailer, failure: Mailer.Failure) {
+        val email = failure.email
         if (email.retryLimitReached()) {
-            logFailure(email, reason)
+            logFailure(email, failure.reason)
             AggregateLifecycle.apply(
                 EmailSendFailed(
                     emailId = email.id,
-                    reason = "Retry Limit reached: $reason",
+                    reason = "Retry Limit reached: ${failure.reason}",
                     to = email.to,
                     subject = email.subject,
                     text = email.text,
@@ -49,8 +48,8 @@ class EmailAggregate : Logging {
             )
         } else {
             logRetry(email)
-            Thread.sleep(5000)
-            doSend(email)
+            mailer.pause()
+            doSend(email, mailer)
             AggregateLifecycle.apply(
                 EmailSendRetried(
                     emailId = email.id,
@@ -95,12 +94,14 @@ class EmailAggregate : Logging {
     }
 
     @EventSourcingHandler
-    fun on(e: EmailSendFailed) {
+    fun on(e: EmailSendRetried) {
         emailId = e.emailId
     }
 
-    private fun mailer(): Mailer =
-        mailer!!
+    @EventSourcingHandler
+    fun on(e: EmailSendFailed) {
+        emailId = e.emailId
+    }
 }
 
 private fun SendEmail.toEmail() = Email(

@@ -48,7 +48,7 @@ class UserAggregateTests {
 
     private fun fixture(registeredEmails: List<String> = emptyList()): FixtureConfiguration<UserAggregate> =
         AggregateTestFixture(UserAggregate::class.java)
-            .registerInjectableResource(FakeUsersRepository(registeredEmails))
+            .registerInjectableResource(UsersRepositoryStub(registeredEmails))
 
     private fun registerUser() = RegisterUser(
         email = "a@b.com",
@@ -56,7 +56,7 @@ class UserAggregateTests {
     )
 }
 
-class FakeUsersRepository(private val emails: List<String>) : UsersRepository {
+class UsersRepositoryStub(private val emails: List<String>) : UsersRepository {
 
     override fun exists(email: String): Boolean =
         emails.contains(email)

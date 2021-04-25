@@ -75,16 +75,16 @@ class VideoAggregateTests {
 
     private fun fixture(forceFailure: Boolean = false) =
         AggregateTestFixture(VideoAggregate::class.java)
-            .registerInjectableResource(FakeTranscoder(forceFailure))
+            .registerInjectableResource(TranscoderStub(forceFailure))
 }
 
-private class FakeTranscoder(val forceFailue: Boolean) : Transcoder {
+private class TranscoderStub(val forceFailure: Boolean) : Transcoder {
     override fun transcode(
         video: Video,
         onSuccess: (Video.Transcoded) -> Unit,
         onFailure: (reason: String, video: Video) -> Unit
     ) {
-        if (forceFailue) {
+        if (forceFailure) {
             onFailure("transcoding failed", video)
         } else {
             onSuccess(
