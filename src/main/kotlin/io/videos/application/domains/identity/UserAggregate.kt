@@ -11,7 +11,7 @@ import java.util.UUID
 class UserAggregate {
 
     @AggregateIdentifier
-    private var userId: UUID? = null
+    private lateinit var userId: UUID
 
     constructor()
 
@@ -28,7 +28,7 @@ class UserAggregate {
     fun handle(cmd: SignalLoginSuccess) {
         AggregateLifecycle.apply(
             LoginSucceeded(
-                userId = userId!!,
+                userId = userId,
                 email = cmd.email
             )
         )

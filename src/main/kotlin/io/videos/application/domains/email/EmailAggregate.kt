@@ -14,7 +14,7 @@ import java.util.UUID
 class EmailAggregate : Logging {
 
     @AggregateIdentifier
-    private var emailId: UUID? = null
+    private lateinit var emailId: UUID
     private val logger: Logger = logger()
 
     constructor()

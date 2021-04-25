@@ -18,7 +18,7 @@ import java.util.UUID
 @Saga
 class RegistrationSaga : Logging {
 
-    private var userId: UUID? = null
+    private lateinit var userId: UUID
     private val logger: Logger = logger()
 
     @StartSaga
@@ -62,12 +62,12 @@ class RegistrationSaga : Logging {
     )
 
     private fun confirmEmailSent(e: EmailSent) = ConfirmRegistrationEmailSent(
-        userId = userId!!,
+        userId = userId,
         emailId = e.emailId
     )
 
     private fun confirmEmailFailed(e: EmailSendFailed) = ConfirmRegistrationEmailFailed(
-        userId = userId!!,
+        userId = userId,
         emailId = e.emailId
     )
 

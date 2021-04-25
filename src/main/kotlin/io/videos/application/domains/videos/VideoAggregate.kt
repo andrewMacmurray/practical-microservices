@@ -14,7 +14,7 @@ import java.util.UUID
 class VideoAggregate : Logging {
 
     @AggregateIdentifier
-    private var videoId: UUID? = null
+    private lateinit var videoId: UUID
     private val logger: Logger = logger()
 
     constructor()
