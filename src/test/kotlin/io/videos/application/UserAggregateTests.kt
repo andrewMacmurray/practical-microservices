@@ -56,7 +56,7 @@ class UserAggregateTests {
     )
 }
 
-class UsersRepositoryStub(private val emails: List<String>) : UsersRepository {
+private class UsersRepositoryStub(private val emails: List<String>) : UsersRepository {
 
     override fun exists(email: String): Boolean =
         emails.contains(email)
