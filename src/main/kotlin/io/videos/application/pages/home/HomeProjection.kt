@@ -1,10 +1,10 @@
 package io.videos.application.pages.home
 
 import io.videos.application.Entity
-import io.videos.application.Repository
+import io.videos.application.InMemoryRepository
 import io.videos.application.cqrs.Query
+import io.videos.application.domains.identity.InMemoryUsers
 import io.videos.application.domains.identity.RegisteredUser
-import io.videos.application.domains.identity.InMemoryUsersRepository
 import io.videos.application.domains.videos.VideoNamed
 import io.videos.application.domains.videos.VideoPublished
 import io.videos.application.domains.videos.VideoViewed
@@ -29,9 +29,9 @@ data class Video(
 }
 
 @Component
-class HomeProjection(private val users: InMemoryUsersRepository) {
+class HomeProjection(private val users: InMemoryUsers) {
 
-    private val videos: Repository<Video> =
+    private val videos: InMemoryRepository<Video> =
         emptyRepository()
 
     @EventHandler

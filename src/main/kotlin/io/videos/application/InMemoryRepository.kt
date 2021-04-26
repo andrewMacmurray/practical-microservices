@@ -2,7 +2,7 @@ package io.videos.application
 
 import java.util.UUID
 
-class Repository<T : Entity> {
+class InMemoryRepository<T : Entity> {
 
     private var entities: MutableMap<UUID, T> = mutableMapOf()
 
@@ -28,8 +28,8 @@ class Repository<T : Entity> {
     }
 }
 
-fun <T : Entity> emptyRepository(): Repository<T> =
-    Repository()
+fun <T : Entity> emptyRepository(): InMemoryRepository<T> =
+    InMemoryRepository()
 
 interface Entity {
     val id: UUID

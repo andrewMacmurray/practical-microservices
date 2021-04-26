@@ -5,13 +5,11 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier
 import java.util.UUID
 
 class RegisterUser(
+    @TargetAggregateIdentifier
+    val userId: UUID = UUID.randomUUID(),
     val email: String,
     val passwordHash: String
-) : Command {
-
-    @TargetAggregateIdentifier
-    val userId: UUID = UUID.randomUUID()
-}
+) : Command
 
 class SignalLoginSuccess(
     @TargetAggregateIdentifier

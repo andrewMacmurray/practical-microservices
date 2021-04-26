@@ -84,8 +84,4 @@ class UserAggregate {
     fun on(e: RegistrationRejected) {
         this.userId = e.userId
     }
-
-    companion object {
-        const val loginErrorMessage = "Invalid username / password combination"
-    }
 }

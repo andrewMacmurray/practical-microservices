@@ -1,7 +1,7 @@
 package io.videos.application.domains.identity
 
 import io.videos.application.Entity
-import io.videos.application.Repository
+import io.videos.application.InMemoryRepository
 import io.videos.application.cqrs.Queries
 import io.videos.application.cqrs.Query
 import io.videos.application.emptyRepository
@@ -13,7 +13,7 @@ import java.util.UUID
 @Component
 class RegisteredUsersProjection {
 
-    private val users: Repository<RegisteredUser> =
+    private val users: InMemoryRepository<RegisteredUser> =
         emptyRepository()
 
     @EventHandler
@@ -36,9 +36,9 @@ interface UsersRepository {
 }
 
 @Component
-class InMemoryUsersRepository(private val queries: Queries) : UsersRepository {
+class InMemoryUsers(private val queries: Queries) : UsersRepository {
 
-    private val users: Repository<RegisteredUser>
+    private val users: InMemoryRepository<RegisteredUser>
         get() = RegisteredUsersQuery
             .exec(queries)
             .repository
@@ -56,7 +56,7 @@ class InMemoryUsersRepository(private val queries: Queries) : UsersRepository {
         users.all()
 }
 
-class RegisteredUsers(val repository: Repository<RegisteredUser>)
+class RegisteredUsers(val repository: InMemoryRepository<RegisteredUser>)
 
 object RegisteredUsersQuery : Query<RegisteredUsers> {
     override val type = RegisteredUsers::class

@@ -3,7 +3,7 @@ package io.videos.application.pages.registration
 import io.videos.application.Result
 import io.videos.application.cqrs.Commands
 import io.videos.application.cqrs.Events
-import io.videos.application.domains.identity.InMemoryUsersRepository
+import io.videos.application.domains.identity.InMemoryUsers
 import io.videos.application.domains.identity.LoginFailed
 import io.videos.application.domains.identity.RegisterUser
 import io.videos.application.domains.identity.RegisteredUser
@@ -15,7 +15,7 @@ import java.util.UUID
 class UsersService(
     private val commands: Commands,
     private val events: Events,
-    private val users: InMemoryUsersRepository,
+    private val users: InMemoryUsers,
 ) {
 
     fun register(registration: Registration): UUID {

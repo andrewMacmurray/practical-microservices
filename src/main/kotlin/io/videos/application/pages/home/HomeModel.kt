@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 class HomeModelLoader(private val queries: Queries) {
 
     fun load(): HomeModel =
-        queries.get(HomeModelQuery)
+        HomeModelQuery.exec(queries)
 }
 
 class HomeModel(
